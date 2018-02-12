@@ -1,0 +1,114 @@
+version: "2"
+
+services:
+
+  dev-deploy:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/code
+    working_dir: /code
+    environment:
+      - "AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}"
+      - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
+      - "KEBOOLA_STACK=${DEV_STACK_NAME}"
+      - "PAPERTRAIL_PORT=${DEV_PAPERTRAIL_PORT}"
+      - "REGION=${DEV_REGION}"
+      - "S3_BUCKET=${DEV_S3_BUCKET}"
+      - "SERVICE_NAME=${DEV_SERVICE_NAME}"
+      - "STAGE=dev"
+    command: >
+             sh -c '
+             serverless deploy
+             '
+  ci-deploy:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - "AWS_ACCESS_KEY_ID=${CI_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${CI_AWS_SECRET_ACCESS_KEY}"
+      - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
+      - "KEBOOLA_STACK=${CI_STACK_NAME}"
+      - "PAPERTRAIL_PORT=${CI_PAPERTRAIL_PORT}"
+      - "REGION=${CI_REGION}"
+      - "S3_BUCKET=${CI_S3_BUCKET}"
+      - "SERVICE_NAME=${CI_SERVICE_NAME}"
+      - "STAGE=test"
+    command: >
+             sh -c '
+             serverless deploy
+             '
+
+  prod-deploy-us:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - "AWS_ACCESS_KEY_ID=${PROD_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${PROD_AWS_SECRET_ACCESS_KEY}"
+      - "DYNAMO_TABLE=${PROD_DYNAMO_TABLE}"
+      - "KEBOOLA_STACK=${PROD_STACK_NAME}"
+      - "PAPERTRAIL_PORT=${PROD_PAPERTRAIL_PORT}"
+      - "REGION=${PROD_REGION}"
+      - "S3_BUCKET=${PROD_S3_BUCKET}"
+      - "SERVICE_NAME=${PROD_SERVICE_NAME}"
+      - "STAGE=prod"
+    command: >
+             sh -c '
+             serverless deploy
+             '
+
+  prod-deploy-eu:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - "AWS_ACCESS_KEY_ID=${PROD_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${PROD_AWS_SECRET_ACCESS_KEY}"
+      - "DYNAMO_TABLE=${PROD_EU_DYNAMO_TABLE}"
+      - "KEBOOLA_STACK=${PROD_STACK_NAME}"
+      - "PAPERTRAIL_PORT=${PROD_PAPERTRAIL_PORT}"
+      - "REGION=${PROD_EU_REGION}"
+      - "S3_BUCKET=${PROD_EU_S3_BUCKET}"
+      - "SERVICE_NAME=${PROD_EU_SERVICE_NAME}"
+      - "STAGE=prod"
+    command: >
+             sh -c '
+             serverless deploy
+             '
+
+  dev-test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/code
+    working_dir: /code
+    environment:
+      - "AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}"
+      - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
+      - "REGION=${DEV_REGION}"
+      - "S3_BUCKET=${DEV_S3_BUCKET}"
+    command: >
+             sh -c '
+             ./node_modules/.bin/mocha --timeout 0 test/handler.js
+             '
+
+  ci-test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - "AWS_ACCESS_KEY_ID=${CI_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${CI_AWS_SECRET_ACCESS_KEY}"
+      - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
+      - "REGION=${CI_REGION}"
+      - "S3_BUCKET=${CI_S3_BUCKET}"
+    command: >
+             sh -c '
+             ./node_modules/.bin/mocha --timeout 0 test/handler.js
+             '
