@@ -87,12 +87,16 @@ services:
     volumes:
       - .:/code
     working_dir: /code
+    links:
+      - localstack
     environment:
       - "AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}"
-      - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
-      - "REGION=${DEV_REGION}"
-      - "S3_BUCKET=${DEV_S3_BUCKET}"
+      - "DYNAMO_ENDPOINT=http://localstack:4569"
+      - "DYNAMO_TABLE=emails"
+      - "REGION=us-east-1"
+      - "S3_BUCKET=emails"
+      - "S3_ENDPOINT=http://localstack:4572"
     command: >
              sh -c '
              ./node_modules/.bin/mocha --timeout 0 test/handler.js
@@ -102,13 +106,25 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    links:
+      - localstack
     environment:
       - "AWS_ACCESS_KEY_ID=${CI_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${CI_AWS_SECRET_ACCESS_KEY}"
-      - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
-      - "REGION=${CI_REGION}"
-      - "S3_BUCKET=${CI_S3_BUCKET}"
+      - "DYNAMO_ENDPOINT=http://localstack:4569"
+      - "DYNAMO_TABLE=emails"
+      - "REGION=us-east-1"
+      - "S3_BUCKET=emails"
+      - "S3_ENDPOINT=http://localstack:4572"
     command: >
              sh -c '
              ./node_modules/.bin/mocha --timeout 0 test/handler.js
              '
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4569:4569"
+      - "4572:4572"
+    environment:
+      - "SERVICES=s3,dynamodb"

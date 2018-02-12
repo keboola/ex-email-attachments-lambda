@@ -10,11 +10,35 @@ const uniqid = require('uniqid');
 
 aws.config.setPromisesDependency(Promise);
 
-const s3 = new aws.S3();
-const dynamo = new aws.DynamoDB({ region: process.env.REGION });
+const s3 = new aws.S3({
+  s3ForcePathStyle: true,
+  endpoint: new aws.Endpoint(process.env.S3_ENDPOINT),
+  sslEnabled: false,
+});
+handler.setS3(s3);
+
+const dynamo = new aws.DynamoDB({
+  region: process.env.REGION,
+  endpoint: process.env.DYNAMO_ENDPOINT,
+});
+handler.setDynamo(dynamo);
 
 describe('Handler', () => {
-  //before(() => ;
+  before(() => dynamo.deleteTable({ TableName: process.env.DYNAMO_TABLE }).promise()
+    .catch(() => null)
+    .then(() => dynamo.createTable({
+    TableName: process.env.DYNAMO_TABLE,
+    AttributeDefinitions: [
+      { AttributeName: "Project", AttributeType: "N" },
+      { AttributeName: "Config", AttributeType: "S" },
+    ],
+    KeySchema: [
+      { AttributeName: "Project", KeyType: "HASH" },
+      { AttributeName: "Config", KeyType: "RANGE" }
+    ],
+    ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
+  }).promise())
+    .then(() => s3.createBucket({ Bucket: process.env.S3_BUCKET }).promise()));
 
   const incomingFile = `test_${Math.random()}`;
   const incomingKey = `_incoming/${incomingFile}`;

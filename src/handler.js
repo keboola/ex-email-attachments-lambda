@@ -8,6 +8,11 @@ const Promise = require('bluebird');
 const simpleParser = require('mailparser').simpleParser;
 
 aws.config.setPromisesDependency(Promise);
+let s3 = new aws.S3({});
+let dynamo = new aws.DynamoDB({ region: process.env.REGION });
+
+module.exports.setS3 = client => s3 = client;
+module.exports.setDynamo = client => dynamo = client;
 
 module.exports.handler = (event, context, callback) => RequestHandler.handler(() => {
   if (!_.has(event, 'Records') || !event.Records.length ||
@@ -24,9 +29,6 @@ module.exports.handler = (event, context, callback) => RequestHandler.handler(()
   if (event.Records[0].eventName !== 'ObjectCreated:Put' || path[0] !== '_incoming') {
     return callback();
   }
-
-  const s3 = new aws.S3();
-  const dynamo = new aws.DynamoDB({ region: process.env.REGION });
 
   // 1) Read the mail from s3
   const promise = s3.getObject({ Bucket: bucket, Key: sourceKey }).promise()
