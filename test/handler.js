@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const expect = require('unexpected');
 const handler = require('../src/handler');
-const fs = require('mz/fs');
+const fs = require('fs');
 const aws = require('aws-sdk');
 const Promise = require('bluebird');
 const uniqid = require('uniqid');
@@ -45,21 +45,21 @@ describe('Handler', () => {
   const projectId = _.random(1, 128);
   const config = uniqid();
   const email = `${projectId}-${config}-1234@import.test.keboola.com`;
+  const file = _.replace(fs.readFileSync(`${__dirname}/email`), '{{EMAIL}}', email);
+
   it('Handle', () =>
-    fs.readFile(`${__dirname}/email`)
-      .then(file => _.replace(file, '{{EMAIL}}', email))
-      .then(file => s3.putObject({
+    dynamo.putItem({
+      Item: {
+        Project: { N: `${projectId}` },
+        Config: { S: config },
+        Email: { S: email },
+      },
+      TableName: process.env.DYNAMO_TABLE,
+    }).promise()
+      .then(() => s3.putObject({
         Body: file,
         Bucket: process.env.S3_BUCKET,
         Key: incomingKey,
-      }).promise())
-      .then(() => dynamo.putItem({
-        Item: {
-          Project: { N: `${projectId}` },
-          Config: { S: config },
-          Email: { S: email },
-        },
-        TableName: process.env.DYNAMO_TABLE,
       }).promise())
       .then(() => handler.handler({
         Records: [
@@ -72,21 +72,24 @@ describe('Handler', () => {
               object: {
                 key: incomingKey,
               },
-            }
-          }
-        ]
-      }, {}, () => {
-        expect(s3.headObject({ Bucket: process.env.S3_BUCKET, Key: incomingKey }).promise(), 'to be rejected');
-        expect(s3.headObject({ Bucket: process.env.S3_BUCKET, Key: `${projectId}/${config}/${incomingFile}` }).promise(), 'to be fulfilled');
-
-        return s3.deleteObject({ Bucket: process.env.S3_BUCKET, Key: `${projectId}/${config}/${incomingFile}` }).promise()
-          .then(() => dynamo.deleteItem({
-            Key: {
-              Project: { N: `${projectId}` },
-              Config: { S: config },
             },
-            TableName: process.env.DYNAMO_TABLE,
-          }).promise());
-      }))
+          },
+        ],
+      }, {}, () => expect(s3.headObject({ Bucket: process.env.S3_BUCKET, Key: incomingKey }).promise(), 'to be rejected')
+        .then(() => s3.listObjects({ Bucket: process.env.S3_BUCKET, Prefix: `${projectId}/${config}/${email}` }).promise())
+        .then((res) => {
+          expect(res, 'to have key', 'Contents');
+          expect(res.Contents, 'to have length', 1);
+          return res.Contents[0].Key;
+        })
+        .then(key => s3.deleteObject({ Bucket: process.env.S3_BUCKET, Key: key }).promise())
+        .then(() => dynamo.deleteItem({
+          Key: {
+            Project: { N: `${projectId}` },
+            Config: { S: config },
+          },
+          TableName: process.env.DYNAMO_TABLE,
+        }).promise())
+      ))
   );
 });

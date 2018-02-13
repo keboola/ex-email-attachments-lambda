@@ -10,10 +10,10 @@ services:
       - .:/code
     working_dir: /code
     environment:
-      - "AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}"
+      - "AWS_ACCESS_KEY_ID=${DEV_DEPLOY_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${DEV_DEPLOY_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
-      - "KEBOOLA_STACK=${DEV_STACK_NAME}"
+      - "KEBOOLA_STACK=${DEV_KEBOOLA_STACK}"
       - "PAPERTRAIL_PORT=${DEV_PAPERTRAIL_PORT}"
       - "REGION=${DEV_REGION}"
       - "S3_BUCKET=${DEV_S3_BUCKET}"
@@ -28,10 +28,10 @@ services:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      - "AWS_ACCESS_KEY_ID=${CI_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${CI_AWS_SECRET_ACCESS_KEY}"
+      - "AWS_ACCESS_KEY_ID=${CI_DEPLOY_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${CI_DEPLOY_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
-      - "KEBOOLA_STACK=${CI_STACK_NAME}"
+      - "KEBOOLA_STACK=${CI_KEBOOLA_STACK}"
       - "PAPERTRAIL_PORT=${CI_PAPERTRAIL_PORT}"
       - "REGION=${CI_REGION}"
       - "S3_BUCKET=${CI_S3_BUCKET}"
@@ -47,10 +47,10 @@ services:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      - "AWS_ACCESS_KEY_ID=${PROD_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${PROD_AWS_SECRET_ACCESS_KEY}"
+      - "AWS_ACCESS_KEY_ID=${PROD_DEPLOY_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${PROD_DEPLOY_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${PROD_DYNAMO_TABLE}"
-      - "KEBOOLA_STACK=${PROD_STACK_NAME}"
+      - "KEBOOLA_STACK=${PROD_KEBOOLA_STACK}"
       - "PAPERTRAIL_PORT=${PROD_PAPERTRAIL_PORT}"
       - "REGION=${PROD_REGION}"
       - "S3_BUCKET=${PROD_S3_BUCKET}"
@@ -66,10 +66,10 @@ services:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      - "AWS_ACCESS_KEY_ID=${PROD_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${PROD_AWS_SECRET_ACCESS_KEY}"
+      - "AWS_ACCESS_KEY_ID=${PROD_DEPLOY_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${PROD_DEPLOY_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${PROD_EU_DYNAMO_TABLE}"
-      - "KEBOOLA_STACK=${PROD_STACK_NAME}"
+      - "KEBOOLA_STACK=${PROD_KEBOOLA_STACK}"
       - "PAPERTRAIL_PORT=${PROD_PAPERTRAIL_PORT}"
       - "REGION=${PROD_EU_REGION}"
       - "S3_BUCKET=${PROD_EU_S3_BUCKET}"
@@ -80,7 +80,7 @@ services:
              serverless deploy
              '
 
-  dev-test:
+  dev-test-app:
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -90,8 +90,8 @@ services:
     links:
       - localstack
     environment:
-      - "AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}"
+      - "AWS_ACCESS_KEY_ID=accessKey"
+      - "AWS_SECRET_ACCESS_KEY=secretKey"
       - "DYNAMO_ENDPOINT=http://localstack:4569"
       - "DYNAMO_TABLE=emails"
       - "REGION=us-east-1"
@@ -102,15 +102,37 @@ services:
              ./node_modules/.bin/mocha --timeout 0 test/handler.js
              '
 
-  ci-test:
+  dev-test-func:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/code
+    working_dir: /code
+    environment:
+      - "AWS_ACCESS_KEY_ID=${DEV_TEST_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${DEV_TEST_AWS_SECRET_ACCESS_KEY}"
+      - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
+      - "KEBOOLA_STACK=${DEV_KEBOOLA_STACK}"
+      - "PAPERTRAIL_PORT=${DEV_PAPERTRAIL_PORT}"
+      - "REGION=${DEV_REGION}"
+      - "S3_BUCKET=${DEV_S3_BUCKET}"
+      - "SERVICE_NAME=${DEV_SERVICE_NAME}"
+      - "STAGE=dev"
+    command: >
+             sh -c '
+             ./node_modules/.bin/mocha --timeout 0 test/func.js
+             '
+
+  ci-test-app:
     build:
       context: .
       dockerfile: ./Dockerfile
     links:
       - localstack
     environment:
-      - "AWS_ACCESS_KEY_ID=${CI_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${CI_AWS_SECRET_ACCESS_KEY}"
+      - "AWS_ACCESS_KEY_ID=accessKey"
+      - "AWS_SECRET_ACCESS_KEY=secretKey"
       - "DYNAMO_ENDPOINT=http://localstack:4569"
       - "DYNAMO_TABLE=emails"
       - "REGION=us-east-1"
@@ -119,6 +141,25 @@ services:
     command: >
              sh -c '
              ./node_modules/.bin/mocha --timeout 0 test/handler.js
+             '
+
+  ci-test-func:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - "AWS_ACCESS_KEY_ID=${CI_TEST_AWS_ACCESS_KEY_ID}"
+      - "AWS_SECRET_ACCESS_KEY=${CI_TEST_AWS_SECRET_ACCESS_KEY}"
+      - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
+      - "KEBOOLA_STACK=${CI_KEBOOLA_STACK}"
+      - "PAPERTRAIL_PORT=${CI_PAPERTRAIL_PORT}"
+      - "REGION=${CI_REGION}"
+      - "S3_BUCKET=${CI_S3_BUCKET}"
+      - "SERVICE_NAME=${CI_SERVICE_NAME}"
+      - "STAGE=test"
+    command: >
+             sh -c '
+             ./node_modules/.bin/mocha --timeout 0 test/func.js
              '
 
   localstack:

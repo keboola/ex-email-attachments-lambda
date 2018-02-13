@@ -11,8 +11,9 @@ before_script:
   - docker-compose build
 
 script:
+  - docker-compose run --rm ci-test-app
   - docker-compose run --rm ci-deploy
-  - docker-compose run --rm ci-test
+  - docker-compose run --rm ci-test-func
 
 after_success:
   - docker images

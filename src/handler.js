@@ -22,6 +22,7 @@ module.exports.handler = (event, context, callback) => RequestHandler.handler(()
     !_.has(event.Records[0].s3.object, 'key')) {
     throw Error(`Event is missing. See: ${JSON.stringify(event)}`);
   }
+  console.log('Event', JSON.stringify(event));
   const bucket = event.Records[0].s3.bucket.name;
   const sourceKey = event.Records[0].s3.object.key;
   const path = sourceKey.split('/');
