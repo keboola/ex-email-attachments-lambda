@@ -61,7 +61,7 @@ resources:
     appLambdaRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: "${env:SERVICE_NAME}-role"
+        RoleName: "${env:SERVICE_NAME}-${env:REGION}-role"
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -71,7 +71,7 @@ resources:
                   - lambda.amazonaws.com
               Action: sts:AssumeRole
         Policies:
-          - PolicyName: "${env:SERVICE_NAME}-policy"
+          - PolicyName: "${env:SERVICE_NAME}-${env:REGION}-policy"
             PolicyDocument:
               Version: '2012-10-17'
               Statement:
