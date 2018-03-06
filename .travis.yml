@@ -21,6 +21,6 @@ after_success:
 deploy:
   provider: script
   skip_cleanup: true
-  script: docker-compose run --rm prod-deploy-us && docker-compose run --rm prod-deploy-eu
+  script: docker-compose run --rm prod-deploy-us && rm -rf .serverless & docker-compose run --rm prod-deploy-eu
   on:
     tags: true

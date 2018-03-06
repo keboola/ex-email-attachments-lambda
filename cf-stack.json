@@ -223,13 +223,11 @@
                     "",
                     [
                       "arn:aws:iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
+                      { "Ref": "AWS::AccountId" },
                       ":role/",
-                      {
-                        "Ref": "ServiceName"
-                      },
+                      { "Ref": "ServiceName" },
+                      "-",
+                      { "Ref": "AWS::Region" },
                       "-role"
                     ]
                   ]
@@ -247,13 +245,10 @@
                     "",
                     [
                       "arn:aws:iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
+                      { "Ref": "AWS::AccountId" },
                       ":role/",
-                      {
-                        "Ref": "ServiceName"
-                      },
+                      { "Ref": "ServiceName" },
+                      { "Ref": "AWS::Region" },
                       "-*"
                     ]
                   ]
