@@ -16,6 +16,8 @@ provider:
   memorySize: 256
   timeout: 30
   versionFunctions: false
+  deploymentBucket:
+    name: "${env:SERVICE_NAME}-${env:REGION}-deployment"
   environment:
     DYNAMO_TABLE: ${env:DYNAMO_TABLE}
     S3_BUCKET: ${env:S3_BUCKET}

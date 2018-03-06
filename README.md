@@ -8,9 +8,8 @@ Lambda handler for Email attachments extractor. See [keboola/ex-email-attachment
 ## Installation
 
 1. Download git repository: `git clone git@github.com:keboola/ex-email-attachments-lambda.git`
-2. Create a stack [cf-template.json](https://github.com/keboola/ex-email-attachments-lambda/blob/master/cf-template.json) with IAM policies and user groups for deployment and functional testing. You will need to fill parameters:
-    - `ServiceName` - should be the same as `SERVICE_NAME` env var (e.g. `dev-ex-email-attachments-lambda`)
-    - `KeboolaStack` - should be the same as `KEBOOLA_STACK` env var (e.g. `ex-email-attachments`)
+2. Create a stack [cf-stack.json](https://github.com/keboola/ex-email-attachments-lambda/blob/master/cf-stack.json) with IAM policies and user groups for deployment and functional testing. You will need to fill parameters:
+    - `ServiceName` - should be the same as `SERVICE_NAME` env var (e.g. `dev-ex-email-attachments-lambda`), and should be unique across all instances
     - `Stage` - one of: `dev`, `test`, `prod` (again, should be the same as `STAGE` env var)
     - `DynamoTable` - name of the DynamoDB table created by the extractor
     - `S3Bucket` - name of the S3 bucket created by the extractor

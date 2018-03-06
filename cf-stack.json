@@ -29,17 +29,16 @@
     }
   },
   "Resources": {
-    "ServerlessDeployPolicy": {
+    "ServerlessDeploymentPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
         "Description": {
           "Fn::Join": [
             "-",
             [
-              {
-                "Ref": "KeboolaStack"
-              },
-              "lambda-deploy"
+              { "Ref": "ServiceName" },
+              { "Ref": "AWS::Region" },
+              "lambda-deploy-policy"
             ]
           ]
         },
@@ -122,10 +121,10 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      {
-                        "Ref": "ServiceName"
-                      },
-                      "-*/*"
+                      { "Ref": "ServiceName" },
+                      "-",
+                      { "Ref": "AWS::Region" },
+                      "-deployment/*"
                     ]
                   ]
                 },
@@ -134,33 +133,10 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      {
-                        "Ref": "ServiceName"
-                      },
-                      "-*"
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:aws:s3:::",
-                      {
-                        "Ref": "S3Bucket"
-                      },
-                      "/*"
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:aws:s3:::",
-                      {
-                        "Ref": "S3Bucket"
-                      }
+                      { "Ref": "ServiceName" },
+                      "-",
+                      { "Ref": "AWS::Region" },
+                      "-deployment"
                     ]
                   ]
                 }
@@ -287,6 +263,37 @@
             {
               "Effect": "Allow",
               "Action": [
+                "s3:*"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
                 "events:*",
                 "logs:*",
                 "cloudwatch:*",
@@ -308,23 +315,22 @@
         }
       }
     },
-    "ServerlessDeployGroup": {
+    "ServerlessDeploymentGroup": {
       "Type": "AWS::IAM::Group",
       "Properties": {
         "GroupName": {
           "Fn::Join": [
             "-",
             [
-              {
-                "Ref": "KeboolaStack"
-              },
-              "lambda-deploy"
+              { "Ref": "ServiceName" },
+              { "Ref": "AWS::Region" },
+              "lambda-deploy-group"
             ]
           ]
         },
         "ManagedPolicyArns": [
           {
-            "Ref": "ServerlessDeployPolicy"
+            "Ref": "ServerlessDeploymentPolicy"
           }
         ],
         "Path": "/"
@@ -337,10 +343,9 @@
           "Fn::Join": [
             "-",
             [
-              {
-                "Ref": "KeboolaStack"
-              },
-              "tests"
+              { "Ref": "ServiceName" },
+              { "Ref": "AWS::Region" },
+              "tests-policy"
             ]
           ]
         },
@@ -444,9 +449,8 @@
           "Fn::Join": [
             "-",
             [
-              {
-                "Ref": "KeboolaStack"
-              },
+              { "Ref": "ServiceName" },
+              { "Ref": "AWS::Region" },
               "tests-group"
             ]
           ]
@@ -457,6 +461,36 @@
           }
         ],
         "Path": "/"
+      }
+    },
+    "ServerlessDeploymentS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Join" : [
+            "-",
+            [
+              { "Ref": "ServiceName" },
+              { "Ref" : "AWS::Region" },
+              "deployment"
+            ]
+          ]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "RemovalRule",
+              "Status": "Enabled",
+              "ExpirationInDays": "30"
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "KeboolaStack",
+            "Value": { "Ref": "KeboolaStack" }
+          }
+        ]
       }
     }
   }
