@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Keboola Pigeon - creates IAM Group for deployment with scoped permissions. Assign this group to ci/deploy user.",
+  "Description": "Keboola Email attachments extractor - creates IAM Group for deployment with scoped permissions. Assign this group to ci/deploy user.",
   "Parameters": {
     "KeboolaStack": {
       "Type": "String",
@@ -39,7 +39,7 @@
               {
                 "Ref": "KeboolaStack"
               },
-              "pigeon-lambda-deploy"
+              "lambda-deploy"
             ]
           ]
         },
@@ -318,7 +318,7 @@
               {
                 "Ref": "KeboolaStack"
               },
-              "pigeon-lambda-deploy"
+              "lambda-deploy"
             ]
           ]
         },
@@ -330,7 +330,7 @@
         "Path": "/"
       }
     },
-    "PigeonTestPolicy": {
+    "TestUserPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
         "Description": {
@@ -340,7 +340,7 @@
               {
                 "Ref": "KeboolaStack"
               },
-              "pigeon-tests"
+              "tests"
             ]
           ]
         },
@@ -437,7 +437,7 @@
         }
       }
     },
-    "PigeonTestGroup": {
+    "TestUserGroup": {
       "Type": "AWS::IAM::Group",
       "Properties": {
         "GroupName": {
@@ -447,13 +447,13 @@
               {
                 "Ref": "KeboolaStack"
               },
-              "pigeon-tests"
+              "tests-group"
             ]
           ]
         },
         "ManagedPolicyArns": [
           {
-            "Ref": "PigeonTestPolicy"
+            "Ref": "TestUserPolicy"
           }
         ],
         "Path": "/"

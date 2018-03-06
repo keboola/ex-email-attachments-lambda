@@ -1,12 +1,12 @@
 {
-  "name": "pigeon-lambda-handler",
+  "name": "email-attachments-lambda",
   "author": "Jakub Matejka <jakub@keboola.com>",
   "license": "MIT",
   "version": "1.0.0",
-  "description": "Lambda handler for Keboola Pigeon",
+  "description": "Lambda handler for Keboola Email attachments extractor",
   "repository": {
     "type": "git",
-    "url": "https://github.com/keboola/pigeon.git"
+    "url": "https://github.com/keboola/ex-email-attachments.git"
   },
   "dependencies": {
     "@keboola/serverless-request-handler": "^1.1.1",

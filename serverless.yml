@@ -19,7 +19,7 @@ provider:
   environment:
     DYNAMO_TABLE: ${env:DYNAMO_TABLE}
     S3_BUCKET: ${env:S3_BUCKET}
-  role: pigeonLambdaRole
+  role: appLambdaRole
   stackTags:
     KeboolaStack: ${env:KEBOOLA_STACK}
   iamRoleStatements:
@@ -31,7 +31,7 @@ provider:
 
 package:
   include:
-    - src/pigeon.js
+    - src/handler.js
     - node_modules/**
   exclude:
     - .env
@@ -56,7 +56,7 @@ functions:
 
 resources:
   Resources:
-    pigeonLambdaRole:
+    appLambdaRole:
       Type: AWS::IAM::Role
       Properties:
         RoleName: "${env:SERVICE_NAME}-role"
