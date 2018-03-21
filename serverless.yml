@@ -52,7 +52,7 @@ functions:
       -
         existingS3:
           bucket: "${env:S3_BUCKET}"
-          event: "s3:ObjectCreated:Put"
+          event: "s3:ObjectCreated:*"
           rules:
             - prefix: _incoming/
 

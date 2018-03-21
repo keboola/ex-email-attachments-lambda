@@ -27,8 +27,11 @@ module.exports.handler = (event, context, callback) => RequestHandler.handler(()
   const sourceKey = event.Records[0].s3.object.key;
   const path = sourceKey.split('/');
 
-  if (event.Records[0].eventName !== 'ObjectCreated:Put' || path[0] !== '_incoming') {
+  if (path[0] !== '_incoming') {
     return callback();
+  }
+  if (!_.startsWith(event.Records[0].eventName, 'ObjectCreated:')) {
+    throw Error(`Wrong event triggered. See: ${JSON.stringify(event)}`);
   }
 
   // 1) Read the mail from s3
@@ -41,7 +44,7 @@ module.exports.handler = (event, context, callback) => RequestHandler.handler(()
     })
     // 2) Parse destination address from the file and check its existence in Dynamo
     .then(data => simpleParser(data.Body)
-      .then(mail => new Promise(resolve => resolve(mail.to.text.split('-')))
+      .then(mail => new Promise.resolve(mail.to.text.split('-'))
         .then(emailParts => new Promise((resolve, reject) => {
           if (_.size(emailParts) < 3) {
             reject(UserError.unprocessable());
