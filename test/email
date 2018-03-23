@@ -44,7 +44,7 @@ Received: from [10.0.1.8] (ip-78-45-129-24.net.upcbroadband.cz. [78.45.129.24])
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Tue, 19 Dec 2017 07:07:52 -0800 (PST)
 Date: Tue, 19 Dec 2017 16:07:40 +0100
-From: =?utf-8?Q?Jakub_Mat=C4=9Bjka?= <test@keboola.com>
+From: Test <test@keboola.com>
 To: {{EMAIL}}
 Message-ID: <7bac924c-d316-4379-9497-486c8712e039@Spark>
 In-Reply-To: <b5ab5b8d-9b84-4f9c-a43f-3c79ced6e2cc@Spark>

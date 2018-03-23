@@ -13,6 +13,7 @@ services:
       - "AWS_ACCESS_KEY_ID=${DEV_DEPLOY_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${DEV_DEPLOY_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
+      - "EMAIL_DOMAIN=${DEV_EMAIL_DOMAIN}"
       - "KEBOOLA_STACK=${DEV_KEBOOLA_STACK}"
       - "PAPERTRAIL_PORT=${DEV_PAPERTRAIL_PORT}"
       - "REGION=${DEV_REGION}"
@@ -31,6 +32,7 @@ services:
       - "AWS_ACCESS_KEY_ID=${CI_DEPLOY_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${CI_DEPLOY_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
+      - "EMAIL_DOMAIN=${CI_EMAIL_DOMAIN}"
       - "KEBOOLA_STACK=${CI_KEBOOLA_STACK}"
       - "PAPERTRAIL_PORT=${CI_PAPERTRAIL_PORT}"
       - "REGION=${CI_REGION}"
@@ -50,6 +52,7 @@ services:
       - "AWS_ACCESS_KEY_ID=${PROD_DEPLOY_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${PROD_DEPLOY_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${PROD_DYNAMO_TABLE}"
+      - "EMAIL_DOMAIN=${PROD_EMAIL_DOMAIN}"
       - "KEBOOLA_STACK=${PROD_KEBOOLA_STACK}"
       - "PAPERTRAIL_PORT=${PROD_PAPERTRAIL_PORT}"
       - "REGION=${PROD_REGION}"
@@ -69,6 +72,7 @@ services:
       - "AWS_ACCESS_KEY_ID=${PROD_DEPLOY_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${PROD_DEPLOY_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${PROD_EU_DYNAMO_TABLE}"
+      - "EMAIL_DOMAIN=${PROD_EU_EMAIL_DOMAIN}"
       - "KEBOOLA_STACK=${PROD_KEBOOLA_STACK}"
       - "PAPERTRAIL_PORT=${PROD_PAPERTRAIL_PORT}"
       - "REGION=${PROD_EU_REGION}"
@@ -94,12 +98,14 @@ services:
       - "AWS_SECRET_ACCESS_KEY=secretKey"
       - "DYNAMO_ENDPOINT=http://localstack:4569"
       - "DYNAMO_TABLE=emails"
+      - "EMAIL_DOMAIN=import.test.keboola.com"
       - "REGION=us-east-1"
       - "S3_BUCKET=emails"
       - "S3_ENDPOINT=http://localstack:4572"
+      - TEST_PATH
     command: >
              sh -c '
-             ./node_modules/.bin/mocha --timeout 0 test/handler.js
+             ./node_modules/.bin/mocha --timeout 0 $$TEST_PATH
              '
 
   dev-test-func:
@@ -135,12 +141,13 @@ services:
       - "AWS_SECRET_ACCESS_KEY=secretKey"
       - "DYNAMO_ENDPOINT=http://localstack:4569"
       - "DYNAMO_TABLE=emails"
+      - "EMAIL_DOMAIN=import.test.keboola.com"
       - "REGION=us-east-1"
       - "S3_BUCKET=emails"
       - "S3_ENDPOINT=http://localstack:4572"
     command: >
              sh -c '
-             ./node_modules/.bin/mocha --timeout 0 test/handler.js
+             ./node_modules/.bin/mocha --timeout 0 test/handler.js test/lib
              '
 
   ci-test-func:

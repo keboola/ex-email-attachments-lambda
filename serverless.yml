@@ -21,6 +21,7 @@ provider:
   environment:
     DYNAMO_TABLE: ${env:DYNAMO_TABLE}
     S3_BUCKET: ${env:S3_BUCKET}
+    EMAIL_DOMAIN: ${env:EMAIL_DOMAIN}
   role: appLambdaRole
   stackTags:
     KeboolaStack: ${env:KEBOOLA_STACK}

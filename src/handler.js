@@ -5,7 +5,7 @@ const { UserError, RequestHandler } = require('@keboola/serverless-request-handl
 const aws = require('aws-sdk');
 const moment = require('moment');
 const Promise = require('bluebird');
-const simpleParser = require('mailparser').simpleParser;
+const emailLib = require('./lib/email');
 
 aws.config.setPromisesDependency(Promise);
 let s3 = new aws.S3({});
@@ -43,44 +43,34 @@ module.exports.handler = (event, context, callback) => RequestHandler.handler(()
       throw err;
     })
     // 2) Parse destination address from the file and check its existence in Dynamo
-    .then(data => simpleParser(data.Body)
-      .then(mail => new Promise.resolve(mail.to.text.split('-'))
-        .then(emailParts => new Promise((resolve, reject) => {
-          if (_.size(emailParts) < 3) {
-            reject(UserError.unprocessable());
-          }
-          resolve();
-        })
-          .then(() => dynamo.getItem({
-            Key: {
-              Project: { N: emailParts[0] },
-              Config: { S: emailParts[1] },
-            },
-            TableName: process.env.DYNAMO_TABLE,
-          }).promise())
-          .then((res) => {
-            if (!_.has(res, 'Item.Email.S')) {
-              throw UserError.unprocessable();
-            }
-            if (res.Item.Email.S !== mail.to.text) {
-              throw UserError.unprocessable();
-            }
-          })
-          .then(() => moveFile(s3, bucket, sourceKey, `${emailParts[0]}/${emailParts[1]}/${getFileName(mail)}`))
-        )
-        .catch((err) => {
-          if (err instanceof UserError && err.code === 422) {
-            return moveFile(s3, bucket, `_incoming/${path[1]}`, `_invalid/${getFileName(mail)}`);
-          }
-          throw err;
-        })
-      )
-    );
+    .then(data => emailLib.getRecipientFromEmail(data.Body, process.env.EMAIL_DOMAIN))
+    .then(mail => dynamo.getItem({
+      Key: {
+        Project: { N: mail.project },
+        Config: { S: mail.config },
+      },
+      TableName: process.env.DYNAMO_TABLE,
+    }).promise()
+      .then((res) => {
+        if (!_.has(res, 'Item.Email.S')) {
+          throw UserError.unprocessable(`Email ${mail.address} not valid`);
+        }
+        if (res.Item.Email.S !== mail.address) {
+          throw UserError.unprocessable(`Email ${mail.address} not valid`);
+        }
+      })
+      .then(() => moveFile(s3, bucket, sourceKey, `${mail.project}/${mail.config}/${getFileName(mail)}`))
+      .catch((err) => {
+        if (err instanceof UserError && err.code === 422) {
+          return moveFile(s3, bucket, `_incoming/${path[1]}`, `_invalid/${getFileName(mail)}`);
+        }
+        throw err;
+      }));
 
   return RequestHandler.responsePromise(promise, event, context, callback);
 }, event, context, callback);
 
-const getFileName = mail => `${mail.to.text}-${moment().toISOString()}`;
+const getFileName = mail => `${mail.address}-${moment().toISOString()}`;
 
 const moveFile = (s3, bucket, from, to) => {
   return s3.copyObject({

@@ -35,7 +35,7 @@ describe('Functional test', () => {
         Bucket: process.env.S3_BUCKET,
         Key: incomingKey,
       }).promise())
-      .then(() => sleep(5000))
+      .then(() => sleep(10000))
       .then(() => expect(s3.headObject({ Bucket: process.env.S3_BUCKET, Key: incomingKey }).promise(), 'to be rejected'))
       .then(() => s3.listObjects({ Bucket: process.env.S3_BUCKET, Prefix: `${projectId}/${config}/${email}` }).promise())
       .then((res) => {
