@@ -16,13 +16,12 @@
     "moment": "^2.20.1"
   },
   "devDependencies": {
-    "@keboola/serverless-papertrail-logging": "^1.0.4",
     "aws-sdk": "^2.49.0",
-    "mocha": "^4.1.0",
+    "mocha": "^5.2.0",
     "serverless": "^1.26.0",
     "serverless-external-s3-event": "^1.0.9",
-    "sleep-promise": "^2.0.0",
+    "sleep-promise": "^8.0.1",
     "unexpected": "^10.36.2",
-    "uniqid": "^4.1.1"
+    "uniqid": "^5.0.3"
   }
 }

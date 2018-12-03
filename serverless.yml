@@ -1,18 +1,13 @@
 service: "${env:SERVICE_NAME}"
 
-custom:
-  papertrail:
-    port: ${env:PAPERTRAIL_PORT}
-
 plugins:
   - serverless-external-s3-event
-  - '@keboola/serverless-papertrail-logging'
 
 provider:
   name: aws
   region: ${env:REGION}
   stage: ${env:STAGE}
-  runtime: nodejs6.10
+  runtime: nodejs8.10
   memorySize: 256
   timeout: 30
   versionFunctions: false
