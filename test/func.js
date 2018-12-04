@@ -18,7 +18,7 @@ describe('Functional test', () => {
   const incomingKey = `_incoming/${incomingFile}`;
   const projectId = _.random(1, 128);
   const config = uniqid();
-  const email = `${projectId}-${config}-${uniqid()}@import.test.keboola.com`;
+  const email = `${projectId}-${config}-${uniqid()}@${process.env.EMAIL_DOMAIN}`;
   const file = _.replace(fs.readFileSync(`${__dirname}/email`), '{{EMAIL}}', email);
 
   it('Check deployed lambda', () =>
