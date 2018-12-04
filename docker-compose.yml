@@ -166,7 +166,7 @@ services:
       - "S3_BUCKET=${CI_S3_BUCKET}"
       - "SERVICE_NAME=${CI_SERVICE_NAME}"
       - "STAGE=test"
-      - "EMAIL_DOMAIN=${DEV_EMAIL_DOMAIN}"
+      - "EMAIL_DOMAIN=${CI_EMAIL_DOMAIN}"
     command: >
              sh -c '
              ./node_modules/.bin/mocha --timeout 0 test/func.js
