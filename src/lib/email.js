@@ -11,6 +11,8 @@ module.exports.getRecipientFromEmail = (rawEmail, domain) => simpleParser(rawEma
     if (_.has(email, 'bcc')) {
       recipients.push(...email.bcc.value);
     }
+    console.log('recipients', recipients);
+
     let res;
     recipients.forEach((item) => {
       if (_.endsWith(item.address, domain)) {

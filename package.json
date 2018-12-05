@@ -13,16 +13,15 @@
     "bluebird": "^3.4.7",
     "lodash": "^4.17.4",
     "mailparser": "^2.1.0",
-    "moment": "^2.20.1"
+    "moment": "^2.20.1",
+    "serverless-plugin-existing-s3": "^2.2.2"
   },
   "devDependencies": {
-    "@keboola/serverless-papertrail-logging": "^1.0.4",
     "aws-sdk": "^2.49.0",
-    "mocha": "^4.1.0",
+    "mocha": "^5.2.0",
     "serverless": "^1.26.0",
-    "serverless-external-s3-event": "^1.0.9",
-    "sleep-promise": "^2.0.0",
+    "sleep-promise": "^8.0.1",
     "unexpected": "^10.36.2",
-    "uniqid": "^4.1.1"
+    "uniqid": "^5.0.3"
   }
 }

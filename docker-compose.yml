@@ -12,17 +12,18 @@ services:
     environment:
       - "AWS_ACCESS_KEY_ID=${DEV_DEPLOY_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${DEV_DEPLOY_AWS_SECRET_ACCESS_KEY}"
+      - "CLOUDFORMATION_ROLE_ARN=${DEV_CLOUDFORMATION_ROLE_ARN}"
+      - "LAMBDA_EXECUTION_ROLE_ARN=${DEV_LAMBDA_EXECUTION_ROLE_ARN}"
       - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
       - "EMAIL_DOMAIN=${DEV_EMAIL_DOMAIN}"
-      - "KEBOOLA_STACK=${DEV_KEBOOLA_STACK}"
-      - "PAPERTRAIL_PORT=${DEV_PAPERTRAIL_PORT}"
+      - "KEBOOLA_STACK=ex-email-attachments"
       - "REGION=${DEV_REGION}"
       - "S3_BUCKET=${DEV_S3_BUCKET}"
       - "SERVICE_NAME=${DEV_SERVICE_NAME}"
       - "STAGE=dev"
     command: >
              sh -c '
-             serverless deploy
+             serverless deploy && serverless s3deploy
              '
   ci-deploy:
     build:
@@ -31,17 +32,18 @@ services:
     environment:
       - "AWS_ACCESS_KEY_ID=${CI_DEPLOY_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${CI_DEPLOY_AWS_SECRET_ACCESS_KEY}"
+      - "CLOUDFORMATION_ROLE_ARN=${CI_CLOUDFORMATION_ROLE_ARN}"
+      - "LAMBDA_EXECUTION_ROLE_ARN=${CI_LAMBDA_EXECUTION_ROLE_ARN}"
       - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
       - "EMAIL_DOMAIN=${CI_EMAIL_DOMAIN}"
-      - "KEBOOLA_STACK=${CI_KEBOOLA_STACK}"
-      - "PAPERTRAIL_PORT=${CI_PAPERTRAIL_PORT}"
+      - "KEBOOLA_STACK=ex-email-attachments"
       - "REGION=${CI_REGION}"
       - "S3_BUCKET=${CI_S3_BUCKET}"
       - "SERVICE_NAME=${CI_SERVICE_NAME}"
       - "STAGE=test"
     command: >
              sh -c '
-             serverless deploy
+             serverless deploy && serverless s3deploy
              '
 
   prod-deploy-us:
@@ -51,17 +53,18 @@ services:
     environment:
       - "AWS_ACCESS_KEY_ID=${PROD_DEPLOY_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${PROD_DEPLOY_AWS_SECRET_ACCESS_KEY}"
+      - "CLOUDFORMATION_ROLE_ARN=${PROD_CLOUDFORMATION_ROLE_ARN}"
+      - "LAMBDA_EXECUTION_ROLE_ARN=${PROD_LAMBDA_EXECUTION_ROLE_ARN}"
       - "DYNAMO_TABLE=${PROD_DYNAMO_TABLE}"
       - "EMAIL_DOMAIN=${PROD_EMAIL_DOMAIN}"
-      - "KEBOOLA_STACK=${PROD_KEBOOLA_STACK}"
-      - "PAPERTRAIL_PORT=${PROD_PAPERTRAIL_PORT}"
+      - "KEBOOLA_STACK=ex-email-attachments"
       - "REGION=${PROD_REGION}"
       - "S3_BUCKET=${PROD_S3_BUCKET}"
       - "SERVICE_NAME=${PROD_SERVICE_NAME}"
       - "STAGE=prod"
     command: >
              sh -c '
-             serverless deploy
+             serverless deploy && serverless s3deploy
              '
 
   prod-deploy-eu:
@@ -71,17 +74,18 @@ services:
     environment:
       - "AWS_ACCESS_KEY_ID=${PROD_DEPLOY_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${PROD_DEPLOY_AWS_SECRET_ACCESS_KEY}"
+      - "CLOUDFORMATION_ROLE_ARN=${PROD_EU_CLOUDFORMATION_ROLE_ARN}"
+      - "LAMBDA_EXECUTION_ROLE_ARN=${PROD_EU_LAMBDA_EXECUTION_ROLE_ARN}"
       - "DYNAMO_TABLE=${PROD_EU_DYNAMO_TABLE}"
       - "EMAIL_DOMAIN=${PROD_EU_EMAIL_DOMAIN}"
-      - "KEBOOLA_STACK=${PROD_KEBOOLA_STACK}"
-      - "PAPERTRAIL_PORT=${PROD_PAPERTRAIL_PORT}"
+      - "KEBOOLA_STACK=ex-email-attachments"
       - "REGION=${PROD_EU_REGION}"
       - "S3_BUCKET=${PROD_EU_S3_BUCKET}"
       - "SERVICE_NAME=${PROD_EU_SERVICE_NAME}"
       - "STAGE=prod"
     command: >
              sh -c '
-             serverless deploy
+             serverless deploy && serverless s3deploy
              '
 
   dev-test-app:
@@ -102,10 +106,9 @@ services:
       - "REGION=us-east-1"
       - "S3_BUCKET=emails"
       - "S3_ENDPOINT=http://localstack:4572"
-      - TEST_PATH
     command: >
              sh -c '
-             ./node_modules/.bin/mocha --timeout 0 $$TEST_PATH
+             ./node_modules/.bin/mocha --timeout 0 test/handler.js test/lib
              '
 
   dev-test-func:
@@ -119,12 +122,12 @@ services:
       - "AWS_ACCESS_KEY_ID=${DEV_TEST_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${DEV_TEST_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
-      - "KEBOOLA_STACK=${DEV_KEBOOLA_STACK}"
-      - "PAPERTRAIL_PORT=${DEV_PAPERTRAIL_PORT}"
+      - "KEBOOLA_STACK=ex-email-attachments"
       - "REGION=${DEV_REGION}"
       - "S3_BUCKET=${DEV_S3_BUCKET}"
       - "SERVICE_NAME=${DEV_SERVICE_NAME}"
       - "STAGE=dev"
+      - "EMAIL_DOMAIN=${DEV_EMAIL_DOMAIN}"
     command: >
              sh -c '
              ./node_modules/.bin/mocha --timeout 0 test/func.js
@@ -158,12 +161,12 @@ services:
       - "AWS_ACCESS_KEY_ID=${CI_TEST_AWS_ACCESS_KEY_ID}"
       - "AWS_SECRET_ACCESS_KEY=${CI_TEST_AWS_SECRET_ACCESS_KEY}"
       - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
-      - "KEBOOLA_STACK=${CI_KEBOOLA_STACK}"
-      - "PAPERTRAIL_PORT=${CI_PAPERTRAIL_PORT}"
+      - "KEBOOLA_STACK=ex-email-attachments"
       - "REGION=${CI_REGION}"
       - "S3_BUCKET=${CI_S3_BUCKET}"
       - "SERVICE_NAME=${CI_SERVICE_NAME}"
       - "STAGE=test"
+      - "EMAIL_DOMAIN=${CI_EMAIL_DOMAIN}"
     command: >
              sh -c '
              ./node_modules/.bin/mocha --timeout 0 test/func.js
