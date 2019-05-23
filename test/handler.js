@@ -1,12 +1,10 @@
-'use strict';
-
-const _ = require('lodash');
-const expect = require('unexpected');
-const handler = require('../src/handler');
-const fs = require('fs');
-const aws = require('aws-sdk');
-const Promise = require('bluebird');
-const uniqid = require('uniqid');
+import _ from 'lodash';
+import expect from 'unexpected';
+import { handler, setDynamo, setS3 } from '../src/handler';
+import fs from 'fs';
+import aws from 'aws-sdk';
+import Promise from 'bluebird';
+import uniqid from 'uniqid';
 
 aws.config.setPromisesDependency(Promise);
 
@@ -15,13 +13,13 @@ const s3 = new aws.S3({
   endpoint: new aws.Endpoint(process.env.S3_ENDPOINT),
   sslEnabled: false,
 });
-handler.setS3(s3);
+setS3(s3);
 
 const dynamo = new aws.DynamoDB({
   region: process.env.REGION,
   endpoint: process.env.DYNAMO_ENDPOINT,
 });
-handler.setDynamo(dynamo);
+setDynamo(dynamo);
 
 describe('Handler', () => {
   before(() => dynamo.deleteTable({ TableName: process.env.DYNAMO_TABLE }).promise()
@@ -61,7 +59,7 @@ describe('Handler', () => {
         Bucket: process.env.S3_BUCKET,
         Key: incomingKey,
       }).promise())
-      .then(() => handler.handler({
+      .then(() => handler({
         Records: [
           {
             eventName: 'ObjectCreated:Put',

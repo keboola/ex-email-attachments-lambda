@@ -1,10 +1,10 @@
-const _ = require('lodash');
-const aws = require('aws-sdk');
-const expect = require('unexpected');
-const Promise = require('bluebird');
-const fs = require('fs');
-const sleep = require('sleep-promise');
-const uniqid = require('uniqid');
+import _ from 'lodash';
+import aws from 'aws-sdk';
+import expect from 'unexpected';
+import Promise from 'bluebird';
+import fs from 'fs';
+import sleep from 'sleep-promise';
+import uniqid from 'uniqid';
 
 aws.config.setPromisesDependency(Promise);
 

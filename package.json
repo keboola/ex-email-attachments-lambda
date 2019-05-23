@@ -6,22 +6,44 @@
   "description": "Lambda handler for Keboola Email attachments extractor",
   "repository": {
     "type": "git",
-    "url": "https://github.com/keboola/ex-email-attachments.git"
+    "url": "https://github.com/keboola/ex-email-attachments-lambda.git"
   },
   "dependencies": {
-    "@keboola/serverless-request-handler": "^1.1.1",
+    "@babel/runtime": "^7.4.5",
+    "@keboola/middy-error-logger": "^1.0.3",
     "bluebird": "^3.4.7",
+    "http-errors": "^1.7.2",
     "lodash": "^4.17.4",
     "mailparser": "^2.1.0",
+    "middy": "^0.27.0",
     "moment": "^2.20.1",
-    "serverless-plugin-existing-s3": "^2.2.2"
+    "serverless-plugin-existing-s3": "^2.2.2",
+    "source-map-support": "^0.5.12"
   },
   "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-transform-runtime": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/register": "^7.0.0",
+    "@keboola/eslint-config-node": "^1.0.1",
     "aws-sdk": "^2.49.0",
-    "mocha": "^5.2.0",
-    "serverless": "^1.26.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.5",
+    "eslint": "^5.9.0",
+    "eslint-plugin-import": "^2.14.0",
+    "mocha": "^6.1.4",
+    "serverless": "^1.43.0",
+    "serverless-webpack": "^5.3.0",
     "sleep-promise": "^8.0.1",
-    "unexpected": "^10.36.2",
-    "uniqid": "^5.0.3"
+    "unexpected": "^11.6.0",
+    "uniqid": "^5.0.3",
+    "webpack": "^4.20.2",
+    "webpack-node-externals": "^1.5.4"
+  },
+  "scripts": {
+    "test-unit": "./node_modules/.bin/mocha --bail --exit --timeout 0 --require @babel/register --require source-map-support test/handler.js test/lib",
+    "test-func": "./node_modules/.bin/mocha --bail --exit --timeout 0 --require @babel/register --require source-map-support test/func.js",
+    "lint": "./node_modules/.bin/eslint src test"
   }
 }
