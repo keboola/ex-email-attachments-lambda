@@ -6,6 +6,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    image: keboola/ex-email-attachments-lambda
     volumes:
       - .:/code
     working_dir: /code
@@ -21,10 +22,8 @@ services:
       - "S3_BUCKET=${DEV_S3_BUCKET}"
       - "SERVICE_NAME=${DEV_SERVICE_NAME}"
       - "STAGE=dev"
-    command: >
-             sh -c '
-             serverless deploy && serverless s3deploy
-             '
+    command: sh -c 'serverless deploy && serverless s3deploy'
+
   ci-deploy:
     build:
       context: .
@@ -41,10 +40,7 @@ services:
       - "S3_BUCKET=${CI_S3_BUCKET}"
       - "SERVICE_NAME=${CI_SERVICE_NAME}"
       - "STAGE=test"
-    command: >
-             sh -c '
-             serverless deploy && serverless s3deploy
-             '
+    command: sh -c 'serverless deploy && serverless s3deploy'
 
   prod-deploy-us:
     build:
@@ -62,10 +58,7 @@ services:
       - "S3_BUCKET=${PROD_S3_BUCKET}"
       - "SERVICE_NAME=${PROD_SERVICE_NAME}"
       - "STAGE=prod"
-    command: >
-             sh -c '
-             serverless deploy && serverless s3deploy
-             '
+    command: sh -c 'serverless deploy && serverless s3deploy'
 
   prod-deploy-eu:
     build:
@@ -83,15 +76,10 @@ services:
       - "S3_BUCKET=${PROD_EU_S3_BUCKET}"
       - "SERVICE_NAME=${PROD_EU_SERVICE_NAME}"
       - "STAGE=prod"
-    command: >
-             sh -c '
-             serverless deploy && serverless s3deploy
-             '
+    command: sh -c 'serverless deploy && serverless s3deploy'
 
   dev-test-app:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: keboola/ex-email-attachments-lambda
     volumes:
       - .:/code
     working_dir: /code
@@ -106,15 +94,10 @@ services:
       - "REGION=us-east-1"
       - "S3_BUCKET=emails"
       - "S3_ENDPOINT=http://localstack:4572"
-    command: >
-             sh -c '
-             ./node_modules/.bin/mocha --timeout 0 test/handler.js test/lib
-             '
+    command: yarn test-unit
 
   dev-test-func:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: keboola/ex-email-attachments-lambda
     volumes:
       - .:/code
     working_dir: /code
@@ -128,10 +111,7 @@ services:
       - "SERVICE_NAME=${DEV_SERVICE_NAME}"
       - "STAGE=dev"
       - "EMAIL_DOMAIN=${DEV_EMAIL_DOMAIN}"
-    command: >
-             sh -c '
-             ./node_modules/.bin/mocha --timeout 0 test/func.js
-             '
+    command: yarn test-func
 
   ci-test-app:
     build:
@@ -148,10 +128,7 @@ services:
       - "REGION=us-east-1"
       - "S3_BUCKET=emails"
       - "S3_ENDPOINT=http://localstack:4572"
-    command: >
-             sh -c '
-             ./node_modules/.bin/mocha --timeout 0 test/handler.js test/lib
-             '
+    command: yarn test-unit
 
   ci-test-func:
     build:
@@ -167,10 +144,7 @@ services:
       - "SERVICE_NAME=${CI_SERVICE_NAME}"
       - "STAGE=test"
       - "EMAIL_DOMAIN=${CI_EMAIL_DOMAIN}"
-    command: >
-             sh -c '
-             ./node_modules/.bin/mocha --timeout 0 test/func.js
-             '
+    command: yarn test-func
 
   localstack:
     image: localstack/localstack

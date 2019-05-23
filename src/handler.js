@@ -1,20 +1,25 @@
-'use strict';
+import _ from 'lodash';
+import aws from 'aws-sdk';
+import moment from 'moment';
+import bluebird from 'bluebird';
+import createError from 'http-errors';
+import errorLogger from '@keboola/middy-error-logger';
+import { install } from 'source-map-support';
+import middy from 'middy';
 
-const _ = require('lodash');
-const { UserError, RequestHandler } = require('@keboola/serverless-request-handler');
-const aws = require('aws-sdk');
-const moment = require('moment');
-const Promise = require('bluebird');
-const emailLib = require('./lib/email');
+import getRecipientFromEmail from './lib/email';
 
-aws.config.setPromisesDependency(Promise);
+install();
+process.env.BLUEBIRD_LONG_STACK_TRACES = 1;
+global.Promise = bluebird;
+
 let s3 = new aws.S3({});
 let dynamo = new aws.DynamoDB({ region: process.env.REGION });
 
-module.exports.setS3 = client => s3 = client;
-module.exports.setDynamo = client => dynamo = client;
+export const setS3 = client => s3 = client;
+export const setDynamo = client => dynamo = client;
 
-module.exports.handler = (event, context, callback) => RequestHandler.handler(() => {
+const handlerFunction = async (event) => {
   if (!_.has(event, 'Records') || !event.Records.length ||
     !_.has(event.Records[0], 's3') || !_.has(event.Records[0].s3, 'bucket') ||
     !_.has(event.Records[0].s3, 'object') ||
@@ -38,12 +43,12 @@ module.exports.handler = (event, context, callback) => RequestHandler.handler(()
   const promise = s3.getObject({ Bucket: bucket, Key: sourceKey }).promise()
     .catch((err) => {
       if (err.code === 'NotFound' || err.code === 'Forbidden') {
-        throw UserError.notFound(`Uploaded file ${sourceKey} was not found in s3`);
+        throw createError(404, `Uploaded file ${sourceKey} was not found in s3`);
       }
       throw err;
     })
     // 2) Parse destination address from the file and check its existence in Dynamo
-    .then(data => emailLib.getRecipientFromEmail(data.Body, process.env.EMAIL_DOMAIN))
+    .then(data => getRecipientFromEmail(data.Body, process.env.EMAIL_DOMAIN))
     .then(mail => dynamo.getItem({
       Key: {
         Project: { N: mail.project },
@@ -53,22 +58,28 @@ module.exports.handler = (event, context, callback) => RequestHandler.handler(()
     }).promise()
       .then((res) => {
         if (!_.has(res, 'Item.Email.S')) {
-          throw UserError.unprocessable(`Email ${mail.address} not valid`);
+          throw createError(422, `Email ${mail.address} not valid`);
         }
         if (res.Item.Email.S !== mail.address) {
-          throw UserError.unprocessable(`Email ${mail.address} not valid`);
+          throw createError(422, `Email ${mail.address} not valid`);
         }
       })
       .then(() => moveFile(s3, bucket, sourceKey, `${mail.project}/${mail.config}/${getFileName(mail)}`))
       .catch((err) => {
-        if (err instanceof UserError && err.code === 422) {
+        if (_.has(err, 'statusCode') && err.statusCode === 422) {
           return moveFile(s3, bucket, `_incoming/${path[1]}`, `_invalid/${getFileName(mail)}`);
         }
         throw err;
       }));
 
-  return RequestHandler.responsePromise(promise, event, context, callback);
-}, event, context, callback);
+  await promise;
+  return Promise.resolve({ statusCode: 200, body: '' });
+};
+
+// eslint-disable-next-line
+export const handler = middy(handlerFunction)
+  .use(errorLogger());
+
 
 const getFileName = mail => `${mail.address}-${moment().toISOString()}`;
 

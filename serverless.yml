@@ -1,13 +1,23 @@
 service: "${env:SERVICE_NAME}"
 
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules: true
+    forceExclude:
+      - aws-sdk
+      - serverless
+    packager: 'yarn'
+
 plugins:
   - serverless-plugin-existing-s3
+  - serverless-webpack
 
 provider:
   name: aws
   region: ${env:REGION}
   stage: ${env:STAGE}
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   memorySize: 256
   timeout: 30
   versionFunctions: false

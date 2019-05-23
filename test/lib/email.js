@@ -1,9 +1,9 @@
-const _ = require('lodash');
-const expect = require('unexpected');
-const fs = require('fs');
-const uniqid = require('uniqid');
+import _ from 'lodash';
+import expect from 'unexpected';
+import fs from 'fs';
+import uniqid from 'uniqid';
 
-const emailLib = require('../../src/lib/email');
+import getRecipientFromEmail from '../../src/lib/email';
 
 describe('email', () => {
   let projectId;
@@ -17,7 +17,7 @@ describe('email', () => {
   });
 
   it('check in To', () =>
-    emailLib.getRecipientFromEmail(
+    getRecipientFromEmail(
       _.replace(fs.readFileSync(`${__dirname}/../email`), '{{EMAIL}}', email),
       process.env.EMAIL_DOMAIN
     )
@@ -31,7 +31,7 @@ describe('email', () => {
       }));
 
   it('check in multiple To', () =>
-    emailLib.getRecipientFromEmail(
+    getRecipientFromEmail(
       _.replace(fs.readFileSync(`${__dirname}/../email-multiple-to`), '{{EMAIL}}', email),
       process.env.EMAIL_DOMAIN
     )
@@ -45,7 +45,7 @@ describe('email', () => {
       }));
 
   it('check in Cc', () =>
-    emailLib.getRecipientFromEmail(
+    getRecipientFromEmail(
       _.replace(fs.readFileSync(`${__dirname}/../email-cc`), '{{EMAIL}}', email),
       process.env.EMAIL_DOMAIN
     )
