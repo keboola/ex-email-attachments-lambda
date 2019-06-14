@@ -1,0 +1,13 @@
+{
+    "require": {
+        "aws/aws-sdk-php": "^3.100",
+        "php-mime-mail-parser/php-mime-mail-parser": "^5.0"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Keboola\\ExEmailAttachmentsLambda\\": "src/",
+            "Keboola\\ExEmailAttachmentsLambda\\Tests\\": "tests/"
+        }
+    }
+}

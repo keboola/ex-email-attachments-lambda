@@ -1,24 +1,14 @@
 service: "${env:SERVICE_NAME}"
 
-custom:
-  webpack:
-    webpackConfig: 'webpack.config.js'
-    includeModules: true
-    forceExclude:
-      - aws-sdk
-      - serverless
-    packager: 'yarn'
-
 plugins:
   - serverless-plugin-existing-s3
-  - serverless-webpack
 
 provider:
   name: aws
   region: ${env:REGION}
   stage: ${env:STAGE}
-  runtime: nodejs10.x
-  memorySize: 256
+  runtime: provided
+  memorySize: 128
   timeout: 30
   versionFunctions: false
   deploymentBucket:
@@ -40,19 +30,28 @@ provider:
 
 package:
   include:
-    - src/handler.js
-    - node_modules/**
+    - handler.php
+    - src/**
+    - vendor/**
   exclude:
+    - test
+    - node_modules/**
     - .env
+    - .env.template
+    - .travis.yml
+    - cf-stack.yml
     - docker-compose.yml
     - Dockerfile
     - package.json
     - yarn.lock
+    - README.md
 
 functions:
 
   s3Handler:
-    handler: src/handler.handler
+    handler: handler.handler
+    layers:
+      - arn:aws:lambda:eu-west-1:061240556736:layer:lambda-php73-sha256-3ee2fd2fab4250f66d6cb2a3ccc00faba7c952eb8c42a3d819046a2161919c94:1
     tags:
       KeboolaStack: ${env:KEBOOLA_STACK}
     events:

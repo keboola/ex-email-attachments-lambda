@@ -373,7 +373,8 @@
               "Effect": "Allow",
               "Action": [
                 "logs:DescribeLogGroups",
-                "s3:ListAllMyBuckets"
+                "s3:ListAllMyBuckets",
+                "lambda:GetLayerVersion"
               ],
               "Resource": "*"
             },
