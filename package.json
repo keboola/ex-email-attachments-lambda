@@ -13,7 +13,7 @@
     "@keboola/middy-error-logger": "^1.0.3",
     "bluebird": "^3.4.7",
     "http-errors": "^1.7.2",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.19",
     "mailparser": "^2.1.0",
     "middy": "^0.27.0",
     "moment": "^2.20.1",
