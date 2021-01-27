@@ -88,12 +88,12 @@ services:
     environment:
       - "AWS_ACCESS_KEY_ID=accessKey"
       - "AWS_SECRET_ACCESS_KEY=secretKey"
-      - "DYNAMO_ENDPOINT=http://localstack:4569"
+      - "DYNAMO_ENDPOINT=http://localstack:4566"
       - "DYNAMO_TABLE=emails"
       - "EMAIL_DOMAIN=import.test.keboola.com"
       - "REGION=us-east-1"
       - "S3_BUCKET=emails"
-      - "S3_ENDPOINT=http://localstack:4572"
+      - "S3_ENDPOINT=http://localstack:4566"
     command: yarn test-unit
 
   dev-test-func:
@@ -122,12 +122,12 @@ services:
     environment:
       - "AWS_ACCESS_KEY_ID=accessKey"
       - "AWS_SECRET_ACCESS_KEY=secretKey"
-      - "DYNAMO_ENDPOINT=http://localstack:4569"
+      - "DYNAMO_ENDPOINT=http://localstack:4566"
       - "DYNAMO_TABLE=emails"
       - "EMAIL_DOMAIN=import.test.keboola.com"
       - "REGION=us-east-1"
       - "S3_BUCKET=emails"
-      - "S3_ENDPOINT=http://localstack:4572"
+      - "S3_ENDPOINT=http://localstack:4566"
     command: yarn test-unit
 
   ci-test-func:
@@ -149,7 +149,6 @@ services:
   localstack:
     image: localstack/localstack
     ports:
-      - "4569:4569"
-      - "4572:4572"
+      - "4566:4566"
     environment:
       - "SERVICES=s3,dynamodb"
