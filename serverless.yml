@@ -17,7 +17,7 @@ provider:
   name: aws
   region: ${env:REGION}
   stage: ${env:STAGE}
-  runtime: nodejs10.x
+  runtime: nodejs14.x
   memorySize: 256
   timeout: 30
   versionFunctions: false
@@ -27,8 +27,9 @@ provider:
     DYNAMO_TABLE: ${env:DYNAMO_TABLE}
     S3_BUCKET: ${env:S3_BUCKET}
     EMAIL_DOMAIN: ${env:EMAIL_DOMAIN}
-  cfnRole: ${env:CLOUDFORMATION_ROLE_ARN}
-  role: ${env:LAMBDA_EXECUTION_ROLE_ARN}
+  iam:
+    deploymentRole: ${env:CLOUDFORMATION_ROLE_ARN}
+    role: ${env:LAMBDA_EXECUTION_ROLE_ARN}
   stackTags:
     KeboolaStack: ${env:KEBOOLA_STACK}
   iamRoleStatements:
@@ -39,15 +40,14 @@ provider:
          - "arn:aws:s3:::${env:S3_BUCKET}"
 
 package:
-  include:
+  patterns:
     - src/handler.js
     - node_modules/**
-  exclude:
-    - .env
-    - docker-compose.yml
-    - Dockerfile
-    - package.json
-    - yarn.lock
+    - '!.env'
+    - '!docker-compose.yml'
+    - '!Dockerfile'
+    - '!package.json'
+    - '!yarn.lock'
 
 functions:
 
@@ -63,4 +63,3 @@ functions:
             - "s3:ObjectCreated:*"
           rules:
             - prefix: _incoming/
-
