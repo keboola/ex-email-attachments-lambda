@@ -21,3 +21,7 @@ Lambda handler for Email attachments extractor. See [keboola/ex-email-attachment
 ### CI and deployment
 
 CI is configured on Travis, see https://travis-ci.org/keboola/ex-email-attachments-lambda. Deployment is run automatically after releasing a version on GitHub.
+
+## License
+
+MIT licensed, see [LICENSE](./LICENSE) file.
