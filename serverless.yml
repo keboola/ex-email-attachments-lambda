@@ -18,7 +18,7 @@ provider:
   region: ${env:REGION}
   stage: ${env:STAGE}
   runtime: nodejs14.x
-  memorySize: 256
+  memorySize: 512
   timeout: 30
   versionFunctions: false
   deploymentBucket:
