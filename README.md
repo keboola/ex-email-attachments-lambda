@@ -1,7 +1,6 @@
 # Lambda handler for Email attachments extractor
 
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
-[![Build Status](https://travis-ci.org/keboola/ex-email-attachments-lambda.svg)](https://travis-ci.org/keboola/ex-email-attachments-lambda)
 
 Lambda handler for Email attachments extractor. See [keboola/ex-email-attachments](https://github.com/keboola/ex-email-attachments) for more details.
 
@@ -20,4 +19,4 @@ Lambda handler for Email attachments extractor. See [keboola/ex-email-attachment
 
 ### CI and deployment
 
-CI is configured on Travis, see https://travis-ci.org/keboola/ex-email-attachments-lambda. Deployment is run automatically after releasing a version on GitHub.
+CI is configured on GitHub Action. Deployment is run automatically after releasing a version on GitHub.
