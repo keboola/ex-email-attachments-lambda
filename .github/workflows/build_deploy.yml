@@ -2,7 +2,7 @@ name: Build & Deploy
 on: [push]
 
 jobs:
-  Build:
+  build:
     runs-on: ubuntu-latest
     env:
       CLOUDFORMATION_ROLE_ARN: arn:aws:iam::061240556736:role/ci-ex-email-attachments-us-east-1-sls-cf
@@ -36,8 +36,9 @@ jobs:
           AWS_ACCESS_KEY_ID: AKIAQ4QRYXTAOOVQLNW6
           AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_TEST_AWS_SECRET_ACCESS_KEY }}
 
-  Deploy:
+  deploy:
 #    if: github.ref == 'refs/heads/master'
+    needs: build
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: AKIAIMEIMENLMSSY4EBQ
