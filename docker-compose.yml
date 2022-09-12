@@ -1,150 +1,46 @@
 version: "2"
 
 services:
+  app: &app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: keboola/ex-email-attachments-lambda
+    environment:
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:
+      CLOUDFORMATION_ROLE_ARN:
+      LAMBDA_EXECUTION_ROLE_ARN:
+      DYNAMO_TABLE:
+      EMAIL_DOMAIN:
+      KEBOOLA_STACK:
+      REGION:
+      S3_BUCKET:
+      SERVICE_NAME:
+      STAGE:
+
+  test-app:
+    <<: *app
+    links:
+      - localstack
+    environment:
+      AWS_ACCESS_KEY_ID: accessKey
+      AWS_SECRET_ACCESS_KEY: secretKey
+      DYNAMO_ENDPOINT: http://localstack:4566
+      DYNAMO_TABLE: emails
+      EMAIL_DOMAIN: import.test.keboola.com
+      REGION: us-east-1
+      S3_BUCKET: emails
+      S3_ENDPOINT: http://localstack:4566
+    command: yarn test-unit
+
+  test-func:
+    <<: *app
+    command: yarn test-func
 
   deploy:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    image: keboola/ex-email-attachments-lambda
-    volumes:
-      - .:/code
-    working_dir: /code
-    environment:
-      - "AWS_ACCESS_KEY_ID=${DEV_DEPLOY_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${DEV_DEPLOY_AWS_SECRET_ACCESS_KEY}"
-      - "CLOUDFORMATION_ROLE_ARN=${DEV_CLOUDFORMATION_ROLE_ARN}"
-      - "LAMBDA_EXECUTION_ROLE_ARN=${DEV_LAMBDA_EXECUTION_ROLE_ARN}"
-      - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
-      - "EMAIL_DOMAIN=${DEV_EMAIL_DOMAIN}"
-      - "KEBOOLA_STACK=ex-email-attachments"
-      - "REGION=${DEV_REGION}"
-      - "S3_BUCKET=${DEV_S3_BUCKET}"
-      - "SERVICE_NAME=${DEV_SERVICE_NAME}"
-      - "STAGE=dev"
+    <<: *app
     command: sh -c 'serverless deploy && serverless s3deploy'
-
-  ci-deploy:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      - "AWS_ACCESS_KEY_ID=${CI_DEPLOY_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${CI_DEPLOY_AWS_SECRET_ACCESS_KEY}"
-      - "CLOUDFORMATION_ROLE_ARN=${CI_CLOUDFORMATION_ROLE_ARN}"
-      - "LAMBDA_EXECUTION_ROLE_ARN=${CI_LAMBDA_EXECUTION_ROLE_ARN}"
-      - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
-      - "EMAIL_DOMAIN=${CI_EMAIL_DOMAIN}"
-      - "KEBOOLA_STACK=ex-email-attachments"
-      - "REGION=${CI_REGION}"
-      - "S3_BUCKET=${CI_S3_BUCKET}"
-      - "SERVICE_NAME=${CI_SERVICE_NAME}"
-      - "STAGE=test"
-    command: sh -c 'serverless deploy && serverless s3deploy'
-
-  prod-deploy-us:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      - "AWS_ACCESS_KEY_ID=${PROD_DEPLOY_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${PROD_DEPLOY_AWS_SECRET_ACCESS_KEY}"
-      - "CLOUDFORMATION_ROLE_ARN=${PROD_CLOUDFORMATION_ROLE_ARN}"
-      - "LAMBDA_EXECUTION_ROLE_ARN=${PROD_LAMBDA_EXECUTION_ROLE_ARN}"
-      - "DYNAMO_TABLE=${PROD_DYNAMO_TABLE}"
-      - "EMAIL_DOMAIN=${PROD_EMAIL_DOMAIN}"
-      - "KEBOOLA_STACK=ex-email-attachments"
-      - "REGION=${PROD_REGION}"
-      - "S3_BUCKET=${PROD_S3_BUCKET}"
-      - "SERVICE_NAME=${PROD_SERVICE_NAME}"
-      - "STAGE=prod"
-    command: sh -c 'serverless deploy && serverless s3deploy'
-
-  prod-deploy-eu:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      - "AWS_ACCESS_KEY_ID=${PROD_DEPLOY_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${PROD_DEPLOY_AWS_SECRET_ACCESS_KEY}"
-      - "CLOUDFORMATION_ROLE_ARN=${PROD_EU_CLOUDFORMATION_ROLE_ARN}"
-      - "LAMBDA_EXECUTION_ROLE_ARN=${PROD_EU_LAMBDA_EXECUTION_ROLE_ARN}"
-      - "DYNAMO_TABLE=${PROD_EU_DYNAMO_TABLE}"
-      - "EMAIL_DOMAIN=${PROD_EU_EMAIL_DOMAIN}"
-      - "KEBOOLA_STACK=ex-email-attachments"
-      - "REGION=${PROD_EU_REGION}"
-      - "S3_BUCKET=${PROD_EU_S3_BUCKET}"
-      - "SERVICE_NAME=${PROD_EU_SERVICE_NAME}"
-      - "STAGE=prod"
-    command: sh -c 'serverless deploy && serverless s3deploy'
-
-  dev-test-app:
-    image: keboola/ex-email-attachments-lambda
-    volumes:
-      - .:/code
-    working_dir: /code
-    links:
-      - localstack
-    environment:
-      - "AWS_ACCESS_KEY_ID=accessKey"
-      - "AWS_SECRET_ACCESS_KEY=secretKey"
-      - "DYNAMO_ENDPOINT=http://localstack:4566"
-      - "DYNAMO_TABLE=emails"
-      - "EMAIL_DOMAIN=import.test.keboola.com"
-      - "REGION=us-east-1"
-      - "S3_BUCKET=emails"
-      - "S3_ENDPOINT=http://localstack:4566"
-    command: yarn test-unit
-
-  dev-test-func:
-    image: keboola/ex-email-attachments-lambda
-    volumes:
-      - .:/code
-    working_dir: /code
-    environment:
-      - "AWS_ACCESS_KEY_ID=${DEV_TEST_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${DEV_TEST_AWS_SECRET_ACCESS_KEY}"
-      - "DYNAMO_TABLE=${DEV_DYNAMO_TABLE}"
-      - "KEBOOLA_STACK=ex-email-attachments"
-      - "REGION=${DEV_REGION}"
-      - "S3_BUCKET=${DEV_S3_BUCKET}"
-      - "SERVICE_NAME=${DEV_SERVICE_NAME}"
-      - "STAGE=dev"
-      - "EMAIL_DOMAIN=${DEV_EMAIL_DOMAIN}"
-    command: yarn test-func
-
-  ci-test-app:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    links:
-      - localstack
-    environment:
-      - "AWS_ACCESS_KEY_ID=accessKey"
-      - "AWS_SECRET_ACCESS_KEY=secretKey"
-      - "DYNAMO_ENDPOINT=http://localstack:4566"
-      - "DYNAMO_TABLE=emails"
-      - "EMAIL_DOMAIN=import.test.keboola.com"
-      - "REGION=us-east-1"
-      - "S3_BUCKET=emails"
-      - "S3_ENDPOINT=http://localstack:4566"
-    command: yarn test-unit
-
-  ci-test-func:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      - "AWS_ACCESS_KEY_ID=${CI_TEST_AWS_ACCESS_KEY_ID}"
-      - "AWS_SECRET_ACCESS_KEY=${CI_TEST_AWS_SECRET_ACCESS_KEY}"
-      - "DYNAMO_TABLE=${CI_DYNAMO_TABLE}"
-      - "KEBOOLA_STACK=ex-email-attachments"
-      - "REGION=${CI_REGION}"
-      - "S3_BUCKET=${CI_S3_BUCKET}"
-      - "SERVICE_NAME=${CI_SERVICE_NAME}"
-      - "STAGE=test"
-      - "EMAIL_DOMAIN=${CI_EMAIL_DOMAIN}"
-    command: yarn test-func
 
   localstack:
     image: localstack/localstack
