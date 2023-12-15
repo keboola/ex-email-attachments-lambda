@@ -48,7 +48,7 @@ services:
     command: sh -c 'serverless deploy && serverless s3deploy'
 
   localstack:
-    image: localstack/localstack:1
+    image: localstack/localstack:1.4.0
     ports:
       - "4566:4566"
     environment:
