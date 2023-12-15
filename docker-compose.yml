@@ -19,6 +19,11 @@ services:
       SERVICE_NAME:
       STAGE:
 
+  dev:
+    <<: *app
+    volumes:
+      - .:/code
+
   test-app:
     <<: *app
     links:
