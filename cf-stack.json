@@ -43,16 +43,7 @@
             {
               "Effect": "Allow",
               "Action": [
-                "cloudformation:CreateStack",
-                "cloudformation:CreateUploadBucket",
-                "cloudformation:DeleteStack",
-                "cloudformation:DescribeStackEvents",
-                "cloudformation:DescribeStackResource",
-                "cloudformation:DescribeStackResources",
-                "cloudformation:ListStackResources",
-                "cloudformation:UpdateStack",
-                "cloudformation:DescribeStacks",
-                "cloudformation:SetStackPolicy"
+                "cloudformation:*"
               ],
               "Resource": [
                 { "Fn::Sub": "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${ServiceName}-${Stage}/*" },

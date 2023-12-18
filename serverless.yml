@@ -50,7 +50,6 @@ package:
     - '!yarn.lock'
 
 functions:
-
   s3Handler:
     handler: src/handler.handler
     tags:
