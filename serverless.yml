@@ -1,4 +1,5 @@
 service: "${env:SERVICE_NAME}"
+frameworkVersion: '3'
 
 custom:
   webpack:
