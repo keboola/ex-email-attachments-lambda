@@ -17,7 +17,6 @@
     "mailparser": "^3.2.0",
     "middy": "^0.27.0",
     "moment": "^2.20.1",
-    "serverless-plugin-existing-s3": "^2.2.2",
     "source-map-support": "^0.5.12"
   },
   "devDependencies": {

@@ -10,7 +10,6 @@ custom:
     packager: 'yarn'
 
 plugins:
-  - serverless-plugin-existing-s3
   - serverless-webpack
 
 provider:
@@ -63,3 +62,4 @@ functions:
             - "s3:ObjectCreated:*"
           rules:
             - prefix: _incoming/
+          existing: true
