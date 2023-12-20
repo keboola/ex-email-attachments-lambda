@@ -45,7 +45,7 @@ services:
 
   deploy:
     <<: *app
-    command: sh -c 'serverless deploy && serverless s3deploy'
+    command: sh -c 'serverless deploy'
 
   localstack:
     image: localstack/localstack:1.4.0

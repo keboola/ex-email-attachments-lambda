@@ -1,4 +1,5 @@
 service: "${env:SERVICE_NAME}"
+frameworkVersion: '3'
 
 custom:
   webpack:
@@ -10,7 +11,6 @@ custom:
     packager: 'yarn'
 
 plugins:
-  - serverless-plugin-existing-s3
   - serverless-webpack
 
 provider:
@@ -50,7 +50,6 @@ package:
     - '!yarn.lock'
 
 functions:
-
   s3Handler:
     handler: src/handler.handler
     tags:
@@ -63,3 +62,4 @@ functions:
             - "s3:ObjectCreated:*"
           rules:
             - prefix: _incoming/
+          existing: true
